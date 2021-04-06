@@ -1,14 +1,17 @@
-//3
-/projects/os_lab_2019/lab3/src/Lab_3_2/pa --seed 10 --array_size 100 --pnum 5 
+//1
+/projects/os_lab_2019/lab3/src/Lab_3_1/sequential_min_max 10 100
+
+//2-3
+/projects/os_lab_2019/lab3/src/Lab_3_2/pa --seed 10 --array_size 100 --pnum 5
+/projects/os_lab_2019/lab3/src/Lab_3_2/pa --seed 10 --array_size 100 --pnum 5 -f // Чтоб он вывел это в файл
 
 //4
 make -f /projects/os_lab_2019/lab3/src/makefile
 make -f /projects/os_lab_2019/lab3/src/makefile parallel_min_max
-gcc -c /projects/os_lab_2019/lab3/src/exec.c
+make clean
 
 //5
-gcc -c /projects/os_lab_2019/lab3/src/exec.c
-gcc /projects/os_lab_2019/lab3/src/exec.o -o exec
-/projects/os_lab_2019/lab3/src/exec
-/projects/os_lab_2019/lab3/src/exec 10 100
+make -f makefile
+chmod u+x /projects/os_lab_2019/lab3/src/exec.out
+./exec.out 10 100
 
