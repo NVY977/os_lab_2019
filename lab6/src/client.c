@@ -60,7 +60,6 @@ bool ConvertStringToUI64(const char *str, uint64_t *val) {
 
 void ThreadServer(void *args) {
   struct ThreadArgs *thread_args = (struct ThreadArgs *)args;
-  // TODO: work continiously, rewrite to make parallel
     struct hostent *hostname = gethostbyname((*thread_args).server_args.ip);
     if (hostname == NULL) {
         fprintf(stderr, "gethostbyname failed with %s\n", (*thread_args).server_args.ip);
@@ -95,7 +94,7 @@ void ThreadServer(void *args) {
     memcpy(task + sizeof(uint64_t), &end, sizeof(uint64_t));
     memcpy(task + 2 * sizeof(uint64_t), &mod, sizeof(uint64_t));
 
-    if (send(sck, task, sizeof(task), 0) < 0) {
+    if (send(sck, task, sizeof(task), 0) < 0)  {
       fprintf(stderr, "Send failed\n");
       exit(1);
     }
@@ -119,7 +118,7 @@ void ThreadServer(void *args) {
 int main(int argc, char **argv) {
   uint64_t k = -1;
   uint64_t mod = -1;
-  char servers[255] = {'\0'}; // TODO: explain why 255
+  char servers[255] = {'\0'}; 
 
   while (true) {
     int current_optind = optind ? optind : 1;
@@ -197,16 +196,14 @@ int main(int argc, char **argv) {
    }
    fclose(server_file);
 
-   i = 0;
-   for (; i<servers_num; i++){
+   for (i = 0; i<servers_num; i++){
        printf("ip: %s / port: %d\n", (*(to+i)).ip, (*(to+i)).port);
    }
 
    //sleep(1);
    pthread_t threads[servers_num];
    struct ThreadArgs args[servers_num];
-   i = 0;
-   for (; i<servers_num; i++){
+   for (i = 0; i<servers_num; i++){
       args[i].server_args = *(to+i);
       args[i].begin = (k/servers_num)*i + 1;
       args[i].end = (k/servers_num)*(i+1);

@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     printf("Too few arguments \n");
     exit(1);
   }
-
+  
   if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     perror("socket creating");
     exit(1);

@@ -21,19 +21,6 @@ struct FactorialArgs {
   uint64_t mod;
 };
 
-// uint64_t MultModulo(uint64_t a, uint64_t b, uint64_t mod) {
-//   uint64_t result = 0;
-//   a = a % mod;
-//   while (b > 0) {
-//     if (b % 2 == 1)
-//       result = (result + a) % mod;
-//     a = (a * 2) % mod;
-//     b /= 2;
-//   }
-
-//   return result % mod;
-// }
-
 uint64_t Factorial(const struct FactorialArgs *args) {
   uint64_t ans = 1;
   uint64_t i = (*args).begin;
@@ -93,8 +80,9 @@ int main(int argc, char **argv) {
     return 1;
   }
   // Открывает порты для передачи данных
+  // AF-INET - семейство протоколов. SOCK_STREAM - задает TCP соединени
+  // TCP - обеспечивает надежность и создает постоянное соединение. 
   int server_fd = socket(AF_INET, SOCK_STREAM, 0);
-
   if (server_fd < 0) {
     fprintf(stderr, "Can not create server socket!");
     return 1;
@@ -102,19 +90,20 @@ int main(int argc, char **argv) {
 
   struct sockaddr_in server;
   server.sin_family = AF_INET;
-  server.sin_port = htons((uint16_t)port);
+  server.sin_port = htons((uint16_t)port);  // htons - приводит к серверному виду
   server.sin_addr.s_addr = htonl(INADDR_ANY);
 
   int opt_val = 1;
   setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val));
 
+  // bind - cвзяыает сокет и структуру
   int err = bind(server_fd, (struct sockaddr *)&server, sizeof(server));
   if (err < 0) {
     fprintf(stderr, "Can not bind to socket!");
     return 1;
   }
-
-  err = listen(server_fd, 128);
+   
+  err = listen(server_fd, 128); 
   if (err < 0) {
     fprintf(stderr, "Could not listen on socket\n");
     return 1;
@@ -125,6 +114,7 @@ int main(int argc, char **argv) {
   while (true) {
     struct sockaddr_in client;
     socklen_t client_len = sizeof(client);
+    // Устанавливаем соединение с клиентом
     int client_fd = accept(server_fd, (struct sockaddr *)&client, &client_len);
 
     if (client_fd < 0) {
@@ -135,8 +125,8 @@ int main(int argc, char **argv) {
     while (true) {
       unsigned int buffer_size = sizeof(uint64_t) * 3;
       char from_client[buffer_size];
+      // Получаем от клиента
       int read = recv(client_fd, from_client, buffer_size, 0);
-
       if (!read)
         break;
       if (read < 0) {
@@ -149,7 +139,6 @@ int main(int argc, char **argv) {
       }
 
       pthread_t threads[tnum];
-
       uint64_t begin = 0;
       uint64_t end = 0;
       uint64_t mod = 0;
@@ -163,8 +152,7 @@ int main(int argc, char **argv) {
       uint64_t number = end - begin + 1;
       uint64_t block = number/tnum;
       uint32_t i = 0;
-      for (; i < tnum; i++) {
-        // TODO: parallel somehow
+    for (i = 0; i < tnum; i++) {
 	if (i == 0)
 	{
 		args[i].begin = begin;
@@ -173,18 +161,16 @@ int main(int argc, char **argv) {
 	else
 	{
 		args[i].begin = begin + (block*i)+1;
-        	args[i].end = begin + block * (i+1);
+        args[i].end = begin + block * (i+1);
 	}
 	if (i == tnum - 1) args[i].end = end;
         args[i].mod = mod;
-
         if (pthread_create(&threads[i], NULL, ThreadFactorial,
                            (void *)&args[i])) {
           printf("Error: pthread_create failed!\n");
           return 1;
         }
       }
-
       uint64_t total = 1;
       i = 0;
       for (; i < tnum; i++) {
@@ -203,10 +189,8 @@ int main(int argc, char **argv) {
         break;
       }
     }
-
     shutdown(client_fd, SHUT_RDWR);
     close(client_fd);
   }
-
   return 0;
 }
