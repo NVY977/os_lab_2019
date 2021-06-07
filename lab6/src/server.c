@@ -16,7 +16,7 @@
 #include "./libmult.h"
 
 struct FactorialArgs {
-  uint64_t begin;
+  uint64_t begin; 
   uint64_t end;
   uint64_t mod;
 };
@@ -80,8 +80,6 @@ int main(int argc, char **argv) {
     return 1;
   }
   // Открывает порты для передачи данных
-  // AF-INET - семейство протоколов. SOCK_STREAM - задает TCP соединени
-  // TCP - обеспечивает надежность и создает постоянное соединение. 
   int server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd < 0) {
     fprintf(stderr, "Can not create server socket!");
@@ -90,19 +88,18 @@ int main(int argc, char **argv) {
 
   struct sockaddr_in server;
   server.sin_family = AF_INET;
-  server.sin_port = htons((uint16_t)port);  // htons - приводит к серверному виду
+  server.sin_port = htons((uint16_t)port);
   server.sin_addr.s_addr = htonl(INADDR_ANY);
 
   int opt_val = 1;
   setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val));
 
-  // bind - cвзяыает сокет и структуру
   int err = bind(server_fd, (struct sockaddr *)&server, sizeof(server));
   if (err < 0) {
     fprintf(stderr, "Can not bind to socket!");
     return 1;
   }
-   
+  
   err = listen(server_fd, 128); 
   if (err < 0) {
     fprintf(stderr, "Could not listen on socket\n");
@@ -114,7 +111,7 @@ int main(int argc, char **argv) {
   while (true) {
     struct sockaddr_in client;
     socklen_t client_len = sizeof(client);
-    // Устанавливаем соединение с клиентом
+
     int client_fd = accept(server_fd, (struct sockaddr *)&client, &client_len);
 
     if (client_fd < 0) {
