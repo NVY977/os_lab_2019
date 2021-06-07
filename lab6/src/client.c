@@ -30,19 +30,6 @@ struct ThreadArgs{
 int result = 1;
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 
-// uint64_t MultModulo(uint64_t a, uint64_t b, uint64_t mod) {
-//   uint64_t result = 0;
-//   a = a % mod;
-//   while (b > 0) {
-//     if (b % 2 == 1)
-//       result = (result + a) % mod;
-//     a = (a * 2) % mod;
-//     b /= 2;
-//   }
-
-//   return result % mod;
-// }
-
 bool ConvertStringToUI64(const char *str, uint64_t *val) {
   char *end = NULL;
   unsigned long long i = strtoull(str, NULL, 10);
@@ -171,7 +158,7 @@ int main(int argc, char **argv) {
   // TODO: for one server here, rewrite with servers from file
   FILE* server_file = fopen(servers, "r");
   if (server_file == NULL) {
-      perror( "cannot read server_file" );
+      perror( "Can't read server_file" );
       return 1;
   }
 
@@ -200,7 +187,6 @@ int main(int argc, char **argv) {
        printf("ip: %s / port: %d\n", (*(to+i)).ip, (*(to+i)).port);
    }
 
-   //sleep(1);
    pthread_t threads[servers_num];
    struct ThreadArgs args[servers_num];
    for (i = 0; i<servers_num; i++){
@@ -209,7 +195,8 @@ int main(int argc, char **argv) {
       args[i].end = (k/servers_num)*(i+1);
       if (i == servers_num - 1) args[i].end = k;
       args[i].mod = mod;
-      if (pthread_create(&threads[i], NULL, (void *)ThreadServer, (void *)(args+i))) {
+      if (pthread_create(&threads[i], NULL, (void *)ThreadServer, (void *)(args+i))) 
+      {
       printf("Error: pthread_create failed!\n");
       return 1;
       }

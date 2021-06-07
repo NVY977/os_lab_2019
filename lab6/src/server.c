@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
     while (true) {
       unsigned int buffer_size = sizeof(uint64_t) * 3;
       char from_client[buffer_size];
-      // Получаем от клиента
+    
       int read = recv(client_fd, from_client, buffer_size, 0);
       if (!read)
         break;
